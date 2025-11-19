@@ -157,6 +157,35 @@
         }
     </style>
 </head>
+</div>
+    
+    <script>
+        const resultItems = document.querySelectorAll('.result-item');
+        
+        resultItems.forEach((item, index) => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                item.style.transition = 'all 0.5s ease';
+                item.style.opacity = '1';
+                item.style.transform = 'translateY(0)';
+            }, index * 150);
+        });
+        
+        const eventItems = document.querySelectorAll('.event-item');
+        eventItems.forEach((item, index) => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateX(-20px)';
+            
+            setTimeout(() => {
+                item.style.transition = 'all 0.4s ease';
+                item.style.opacity = '1';
+                item.style.transform = 'translateX(0)';
+            }, 600 + (index * 100));
+        });
+    </script>
+</body>
 <body>
     <div class="container">
         <div class="success-icon">✓</div>
