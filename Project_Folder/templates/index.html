@@ -100,43 +100,37 @@
             font-size: 0.9em;
             line-height: 1.5;
         }
-</style>
+    </style>
 </head>
-
 <body>
     <div class="container">
-        <form action="" method="get">
-            <div class="info-box">
-                <p>Enter an address, landmark, or place name in the Greater Boston area.</p>
-            </div>
-
+        <h1>MBTA Station Finder</h1>
+        <p class="subtitle">Find the nearest T station to any Boston location</p>
+        
+        <form action="/nearest_mbta" method="post">
             <div class="form-group">
-                <label for="query">Location</label>
-                <input type="text" id="query" name="q" placeholder="e.g. Harvard Square">
+                <label for="place_name">Enter a Location:</label>
+                <input type="text" id="place_name" name="place_name" placeholder="e.g., Boston Common, Fenway Park" required>
             </div>
-
-            <button type="submit">Search</button>
+            
+            <button type="submit">Find Nearest MBTA Station</button>
         </form>
+        
+        <div class="info-box">
+            <p>Enter an address, landmark, or place name in the Greater Boston area.</p>
+        </div>
     </div>
-
+    
     <script>
-        (function() {
-            const form = document.querySelector('form');
-            if (!form) return;
-            const button = form.querySelector('button[type="submit"]');
-            if (!button) return;
-            const originalButtonText = button.textContent;
-
-            form.addEventListener('submit', function(event) {
-                // prevent default to update UI then submit programmatically
-                event.preventDefault();
-                button.textContent = 'Searching...';
-                button.disabled = true;
-                button.style.opacity = '0.7';
-                // submit the form after updating the button state
-                form.submit();
-            });
-        })();
+        const form = document.querySelector('form');
+        const button = form.querySelector('button');
+        const originalButtonText = button.textContent;
+        
+        form.addEventListener('submit', function() {
+            button.textContent = 'Searching...';
+            button.disabled = true;
+            button.style.opacity = '0.7';
+        });
     </script>
 </body>
 </html>
