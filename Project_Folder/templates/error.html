@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - MBTA Station Finder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: rgb(26, 26, 26);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgb(45, 45, 45);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            max-width: 500px;
+            width: 100%;
+            border: 2px solid rgb(139, 0, 0);
+            text-align: center;
+        }
+        
+        .error-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            color: rgb(220, 53, 69);
+        }
+        
+        h1 {
+            color: rgb(220, 53, 69);
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .error-message {
+            background: rgb(58, 58, 58);
+            color: rgb(255, 255, 255);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid rgb(220, 53, 69);
+            text-align: left;
+        }
+        
+        .error-message p {
+            line-height: 1.6;
+        }
+        
+        .suggestions {
+            text-align: left;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgb(58, 58, 58);
+            border-radius: 8px;
+        }
+        
+        .suggestions h3 {
+            color: rgb(204, 204, 204);
+            font-size: 1em;
+            margin-bottom: 10px;
+        }
+        
+        .suggestions ul {
+            margin-left: 20px;
+            color: rgb(204, 204, 204);
+        }
+        
+        .suggestions li {
+            margin: 5px 0;
+            line-height: 1.5;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 14px 30px;
+            background: rgb(0, 61, 165);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+        
+        .back-button:hover {
+            background: rgb(0, 82, 204);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="error-icon">⚠</div>
+        <h1>Something Went Wrong</h1>
+        
+        <div class="error-message">
+            <p>{{ error_message }}</p>
+        </div>
+        
+        <div class="suggestions">
+            <h3>Suggestions:</h3>
+            <ul>
+                {% if error_type == "empty_input" %}
+                    <li>Please enter a location in the search box</li>
+                    <li>Try landmarks like "Boston Common" or "Fenway Park"</li>
+                {% elif error_type == "location_not_found" %}
+                    <li>Check your spelling</li>
+                    <li>Try a more specific address or well-known landmark</li>
+                    <li>Make sure the location is in the Boston area</li>
+                {% elif error_type == "no_stations" %}
+                    <li>The location might be too far from Boston</li>
+                    <li>Try searching for a location closer to downtown Boston</li>
+                    <li>MBTA stations are only in the Greater Boston area</li>
+                {% elif error_type == "api_error" %}
+                    <li>There might be an issue with the API keys</li>
+                    <li>Please contact support or try again later</li>
+                {% elif error_type == "connection_error" %}
+                    <li>Check your internet connection</li>
+                    <li>Try refreshing the page</li>
+                    <li>The service might be temporarily unavailable</li>
+                {% else %}
+                    <li>Try entering a valid location in the Greater Boston area</li>
+                    <li>Use specific addresses or well-known landmarks</li>
+                    <li>Check your spelling and try again</li>
+                {% endif %}
+            </ul>
+        </div>
+        
+        <a href="/" class="back-button">Back to Home</a>
+    </div>
+</body>
+</html>
+<!DOCTYPE html>

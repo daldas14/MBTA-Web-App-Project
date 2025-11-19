@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTA Station Results</title>
+     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: rgb(26, 26, 26);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgb(45, 45, 45);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            max-width: 500px;
+            width: 100%;
+            border: 2px solid rgb(0, 61, 165);
+        }
+        
+        h1 {
+            color: rgb(0, 61, 165);
+            margin-bottom: 10px;
+            font-size: 1.8em;
+            text-align: center;
+        }
+        
+        .success-icon {
+            text-align: center;
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: rgb(0, 61, 165);
+        }
+        
+        .result-box {
+            background: rgb(58, 58, 58);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid rgb(0, 61, 165);
+        }
+        
+        .result-item {
+            margin: 15px 0;
+        }
+        
+        .result-label {
+            font-weight: 600;
+            color: rgb(204, 204, 204);
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        .result-value {
+            font-size: 1.2em;
+            color: rgb(255, 255, 255);
+            font-weight: 500;
+        }
+        
+        .station-name {
+            color: rgb(0, 120, 215);
+            font-size: 1.4em;
+        }
+        
+        .accessibility {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: 600;
+        }
+        
+        .accessible-yes {
+            background: rgb(0, 100, 0);
+            color: rgb(255, 255, 255);
+        }
+        
+        .accessible-no {
+            background: rgb(139, 0, 0);
+            color: rgb(255, 255, 255);
+        }
+        
+        .back-button {
+            width: 100%;
+            padding: 14px;
+            background: rgb(0, 61, 165);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .back-button:hover {
+            background: rgb(0, 82, 204);
+        }
+    </style>
+</head>
+<body>
+ <div class="container">
+        <div class="success-icon">✓</div>
+        <h1>Nearest MBTA Station Found</h1>
+        
+        <div class="result-box">
+            <div class="result-item">
+                <span class="result-label">You searched for:</span>
+                <div class="result-value">{{ place_name }}</div>
+            </div>
+              
+            <div class="result-item">
+                <span class="result-label">Nearest Station:</span>
+                <div class="result-value station-name">{{ station_name }}</div>
+            </div>
+            
+            <div class="result-item">
+                <span class="result-label">Wheelchair Accessible:</span>
+                <div>
+                    {% if wheelchair_accessible %}
+                        <span class="accessibility accessible-yes">Yes, accessible</span>
+                    {% else %}
+                        <span class="accessibility accessible-no">Not accessible</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+   <a href="/" class="back-button">Search Another Location</a>
+    </div>
+
+</body>
+</html>
