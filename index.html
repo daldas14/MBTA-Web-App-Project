@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTA Station Finder</title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing: border-box;
+        }
+        body{
+            font-family: 'Times New Roman', Times, serif;
+            background: rgb(26,26,26);
+            min-height: 100vh;
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            padding:25px;
+            
+        }   
+        .container{
+                background: rgb(45,45,45);
+                padding:40px;
+                border-radius:10px;
+                box-shadow:0 15px 40px rgba(0,0,0,0.5);
+                max-width: 500px;
+                width:100%;
+                border:2px solid rgb(0,61,165);
+            }
+            h1{ 
+                color: rgb(0,61,165);
+                margin-bottom:10px;
+                font-size:2em;
+                text-align:center;
+            }
+            .subtitle{
+                color:rgb(204,204,204);
+                text-align:center;
+                margin-bottom:30px;
+                font-size:0.95em;
+            }
+            .form-group{
+                margin-bottom:25px;
+            }
+            label{
+                display:block;
+                color: rgb(255,255,255);
+                font-weight: 600;
+                margin-bottom:8px;
+
+            }
+            input[type="text"]{
+                width:100%;
+                padding: 12px 15px;
+                border:2px solid rgb(85,85,85);
+                border-radius:5px;
+                font-size:1em;
+                background: rgb(58,58,58);
+                color: rgb(255,255,255);
+            }
+            input[type="text"]:focus{
+                outline:none;
+                border-color: rgb(0,61,165);
+            }
+              button {
+            width: 100%;
+            padding: 14px;
+            background: rgb(0, 61, 165);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background: rgb(0, 82, 204);
+        }
+        
+        .info-box {
+            background: rgb(58, 58, 58);
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            border-left: 4px solid rgb(0, 61, 165);
+        }
+        
+        .info-box p {
+            color: rgb(204, 204, 204);
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="container">
+        <h1> MBTA Station Finder</h1>
+        <p class="subtitle"> Find the nearest station to any Boston Location</p>
+        <form action=" /nearestmbta" method="post">
+            <div class"=form-group">
+                <label for="location">Enter a Location:</label>
+                <input type="text" id="location" name="location" placeholder="e.g., 100 Main St, Boston, MA" required>
+            </div>
+            <button type ="submit">Find Nearest MBTA Station</button>
+        </form>
+        <div class="info-box">
+            <p> Enter an address,landmark,or place name in the Boston area.</p> 
+        </div>
+    </div>
+</body>
+</html>
