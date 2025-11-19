@@ -9,6 +9,7 @@ load_dotenv()
 
 MAPBOX_TOKEN = os.getenv("MAPBOX_TOKEN")
 MBTA_API_KEY = os.getenv("MBTA_API_KEY")
+TICKETMASTER_API_KEY = os.getenv("TICKETMASTER_API_KEY")
 
 if MAPBOX_TOKEN is None:
     raise RuntimeError("MAPBOX_TOKEN is not set. Check your .env file.")
@@ -55,6 +56,37 @@ def get_nearest_station(latitude, longitude):
     return station_name, wheelchair_accessible
 
 
+def get_nearby_events(latitude, longitude, radius=5):
+    if TICKETMASTER_API_KEY is None:
+        return []
+    
+    url = f"https://app.ticketmaster.com/discovery/v2/events.json?apikey={TICKETMASTER_API_KEY}&latlong={latitude},{longitude}&radius={radius}&unit=miles&size=3"
+    
+    try:
+        response_data = get_json(url)
+        
+        if "_embedded" not in response_data or "events" not in response_data["_embedded"]:
+            return []
+        
+        events = []
+        for event in response_data["_embedded"]["events"]:
+            event_name = event["name"]
+            event_date = event["dates"]["start"]["localDate"]
+            event_venue = event["_embedded"]["venues"][0]["name"]
+            event_url = event.get("url", "#")
+            
+            events.append({
+                "name": event_name,
+                "date": event_date,
+                "venue": event_venue,
+                "url": event_url
+            })
+        
+        return events
+    except:
+        return []
+
+
 def find_stop_near(place_name):
     latitude, longitude = get_lat_lng(place_name)
     station_name, wheelchair_accessible = get_nearest_station(latitude, longitude)
@@ -76,11 +108,11 @@ def main():
     print(f"Station: {station}")
     print(f"Wheelchair Accessible: {accessible}")
     
-    print("\nPretty printing full JSON response:")
-    query = urllib.parse.quote("Boston Common")
-    url = f"{MAPBOX_BASE_URL}?q={query}&access_token={MAPBOX_TOKEN}"
-    response_data = get_json(url)
-    pprint.pprint(response_data)
+    print("\nTesting get_nearby_events:")
+    events = get_nearby_events(lat, lng)
+    print(f"Found {len(events)} events:")
+    for event in events:
+        print(f"  - {event['name']} on {event['date']} at {event['venue']}")
 
 
 if __name__ == "__main__":
