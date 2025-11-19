@@ -1,0 +1,67 @@
+import os
+import json
+import urllib.request
+import urllib.parse
+from dotenv import load_dotenv
+
+load_dotenv()
+
+MAPBOX_TOKEN = os.getenv("MAPBOX_TOKEN")
+MBTA_API_KEY = os.getenv("MBTA_API_KEY")
+
+if MAPBOX_TOKEN is None:
+    raise RuntimeError("MAPBOX_TOKEN is not set. Check your .env file.")
+if MBTA_API_KEY is None:
+    raise RuntimeError("MBTA_API_KEY is not set. Check your .env file.")
+
+MAPBOX_BASE_URL = "https://api.mapbox.com/search/searchbox/v1/forward"
+MBTA_BASE_URL = "https://api-v3.mbta.com/stops"
+
+
+def get_json(url):
+    with urllib.request.urlopen(url) as response:
+        response_text = response.read().decode("utf-8")
+        response_data = json.loads(response_text)
+        return response_data
+
+
+def get_lat_lng(place_name):
+    query = urllib.parse.quote(place_name)
+    url = f"{MAPBOX_BASE_URL}?q={query}&access_token={MAPBOX_TOKEN}"
+    response_data = get_json(url)
+    coordinates = response_data["features"][0]["geometry"]["coordinates"]
+    longitude = str(coordinates[0])
+    latitude = str(coordinates[1])
+    return latitude, longitude
+
+
+def get_nearest_station(latitude, longitude):
+    params = {
+        "api_key": MBTA_API_KEY,
+        "sort": "distance",
+        "filter[latitude]": latitude,
+        "filter[longitude]": longitude
+    }
+    query_string = urllib.parse.urlencode(params)
+    url = f"{MBTA_BASE_URL}?{query_string}"
+    response_data = get_json(url)
+    nearest_stop = response_data["data"][0]
+    station_name = nearest_stop["attributes"]["name"]
+    wheelchair_boarding = nearest_stop["attributes"]["wheelchair_boarding"]
+    wheelchair_accessible = (wheelchair_boarding == 1)
+    return station_name, wheelchair_accessible
+
+
+def find_stop_near(place_name):
+    latitude, longitude = get_lat_lng(place_name)
+    station_name, wheelchair_accessible = get_nearest_station(latitude, longitude)
+    return station_name, wheelchair_accessible
+
+
+def main():
+    print(get_lat_lng("Boston Common"))
+    print(find_stop_near("Boston Common"))
+
+
+if __name__ == "__main__":
+    main()
