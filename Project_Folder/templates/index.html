@@ -71,6 +71,12 @@
             border-color: rgb(0, 61, 165);
         }
         
+        #input-feedback {
+            margin-top: 5px;
+            font-size: 0.85em;
+            min-height: 20px;
+        }
+        
         button {
             width: 100%;
             padding: 14px;
@@ -81,10 +87,16 @@
             font-size: 1.05em;
             font-weight: 600;
             cursor: pointer;
+            transition: background 0.3s ease;
         }
         
         button:hover {
             background: rgb(0, 82, 204);
+        }
+        
+        button:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
         }
         
         .info-box {
@@ -107,13 +119,14 @@
         <h1>MBTA Station Finder</h1>
         <p class="subtitle">Find the nearest T station to any Boston location</p>
         
-        <form action="/nearest_mbta" method="post">
+        <form action="/nearest_mbta" method="post" id="searchForm">
             <div class="form-group">
                 <label for="place_name">Enter a Location:</label>
-                <input type="text" id="place_name" name="place_name" placeholder="e.g., Boston Common, Fenway Park" required>
+                <input type="text" id="place_name" name="place_name" placeholder="e.g., Boston Common, Fenway Park" required autocomplete="off">
+                <div id="input-feedback"></div>
             </div>
             
-            <button type="submit">Find Nearest MBTA Station</button>
+            <button type="submit" id="submitBtn">Find Nearest MBTA Station</button>
         </form>
         
         <div class="info-box">
@@ -122,14 +135,60 @@
     </div>
     
     <script>
-        const form = document.querySelector('form');
-        const button = form.querySelector('button');
-        const originalButtonText = button.textContent;
+        const input = document.getElementById('place_name');
+        const feedback = document.getElementById('input-feedback');
+        const submitBtn = document.getElementById('submitBtn');
+        const form = document.getElementById('searchForm');
+        
+        input.addEventListener('input', function() {
+            const value = this.value.trim();
+            
+            if (value.length === 0) {
+                feedback.textContent = '';
+                feedback.style.color = '';
+            } else if (value.length < 2) {
+                feedback.textContent = '⚠ Please enter at least 2 characters';
+                feedback.style.color = 'rgb(220, 53, 69)';
+            } else {
+                feedback.textContent = '✓ Looks good!';
+                feedback.style.color = 'rgb(0, 200, 0)';
+            }
+        });
+        
+        form.addEventListener('submit', function(e) {
+            submitBtn.textContent = 'Searching...';
+            submitBtn.disabled = true;
+        });
+        
+        window.addEventListener('load', function() {
+            const history = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+            
+            if (history.length > 0) {
+                const datalist = document.createElement('datalist');
+                datalist.id = 'search-history';
+                
+                history.forEach(function(item) {
+                    const option = document.createElement('option');
+                    option.value = item;
+                    datalist.appendChild(option);
+                });
+                
+                document.body.appendChild(datalist);
+                input.setAttribute('list', 'search-history');
+            }
+        });
         
         form.addEventListener('submit', function() {
-            button.textContent = 'Searching...';
-            button.disabled = true;
-            button.style.opacity = '0.7';
+            const value = input.value.trim();
+            if (value) {
+                let history = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+                
+                if (history.indexOf(value) === -1) {
+                    history.unshift(value);
+                    history = history.slice(0, 5);
+                    localStorage.setItem('searchHistory', JSON.stringify(history));
+                }
+            }
         });
     </script>
 </body>

@@ -55,6 +55,8 @@
         
         .result-item {
             margin: 15px 0;
+            opacity: 0;
+            transform: translateY(20px);
         }
         
         .result-label {
@@ -74,6 +76,31 @@
         .station-name {
             color: rgb(0, 120, 215);
             font-size: 1.4em;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .station-name:hover {
+            text-decoration: underline;
+        }
+        
+        .copy-tooltip {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgb(0, 100, 0);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.7em;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        
+        .copy-tooltip.show {
+            opacity: 1;
         }
         
         .accessibility {
@@ -106,6 +133,14 @@
             border-radius: 5px;
             margin: 10px 0;
             border-left: 3px solid rgb(0, 61, 165);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        
+        .event-item:hover {
+            background: rgb(40, 40, 40);
         }
         
         .event-name {
@@ -115,10 +150,22 @@
             margin-bottom: 5px;
         }
         
+        .expand-icon {
+            float: right;
+            transition: transform 0.3s ease;
+            font-size: 0.8em;
+        }
+        
+        .event-item.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+        
         .event-details {
             color: rgb(204, 204, 204);
             font-size: 0.9em;
             margin-bottom: 8px;
+            display: none;
+            margin-top: 10px;
         }
         
         .event-link {
@@ -150,6 +197,7 @@
             display: inline-block;
             text-align: center;
             margin-top: 20px;
+            transition: background 0.3s ease;
         }
         
         .back-button:hover {
@@ -157,35 +205,6 @@
         }
     </style>
 </head>
-</div>
-    
-    <script>
-        const resultItems = document.querySelectorAll('.result-item');
-        
-        resultItems.forEach((item, index) => {
-            item.style.opacity = '0';
-            item.style.transform = 'translateY(20px)';
-            
-            setTimeout(() => {
-                item.style.transition = 'all 0.5s ease';
-                item.style.opacity = '1';
-                item.style.transform = 'translateY(0)';
-            }, index * 150);
-        });
-        
-        const eventItems = document.querySelectorAll('.event-item');
-        eventItems.forEach((item, index) => {
-            item.style.opacity = '0';
-            item.style.transform = 'translateX(-20px)';
-            
-            setTimeout(() => {
-                item.style.transition = 'all 0.4s ease';
-                item.style.opacity = '1';
-                item.style.transform = 'translateX(0)';
-            }, 600 + (index * 100));
-        });
-    </script>
-</body>
 <body>
     <div class="container">
         <div class="success-icon">✓</div>
@@ -199,7 +218,7 @@
             
             <div class="result-item">
                 <span class="result-label">Nearest Station:</span>
-                <div class="result-value station-name">{{ station_name }}</div>
+                <div class="result-value station-name" id="stationName">{{ station_name }}</div>
             </div>
             
             <div class="result-item">
@@ -218,12 +237,13 @@
                 <span class="result-label">🎫 Upcoming Events Nearby:</span>
                 <div class="events-list">
                     {% for event in events %}
-                        <div class="event-item">
-                            <div class="event-name">{{ event.name }}</div>
+                        <div class="event-item" onclick="toggleEvent(this)">
+                            <div class="event-name">{{ event.name }} <span class="expand-icon">▼</span></div>
                             <div class="event-details">
                                 📅 {{ event.date }} | 📍 {{ event.venue }}
+                                <br>
+                                <a href="{{ event.url }}" target="_blank" class="event-link" onclick="event.stopPropagation()">View Tickets</a>
                             </div>
-                            <a href="{{ event.url }}" target="_blank" class="event-link">View Tickets</a>
                         </div>
                     {% endfor %}
                 </div>
@@ -233,6 +253,66 @@
         
         <a href="/" class="back-button">Search Another Location</a>
     </div>
+    
+    <script>
+        const resultItems = document.querySelectorAll('.result-item');
+        
+        resultItems.forEach(function(item, index) {
+            setTimeout(function() {
+                item.style.transition = 'all 0.5s ease';
+                item.style.opacity = '1';
+                item.style.transform = 'translateY(0)';
+            }, index * 150);
+        });
+        
+        const eventItems = document.querySelectorAll('.event-item');
+        eventItems.forEach(function(item, index) {
+            setTimeout(function() {
+                item.style.transition = 'all 0.4s ease';
+                item.style.opacity = '1';
+                item.style.transform = 'translateX(0)';
+            }, 600 + (index * 100));
+        });
+        
+        function toggleEvent(element) {
+            const details = element.querySelector('.event-details');
+            const isExpanded = element.classList.contains('expanded');
+            
+            if (isExpanded) {
+                element.classList.remove('expanded');
+                details.style.display = 'none';
+            } else {
+                element.classList.add('expanded');
+                details.style.display = 'block';
+            }
+        }
+        
+        const stationName = document.getElementById('stationName');
+        if (stationName) {
+            stationName.title = 'Click to copy station name';
+            
+            stationName.addEventListener('click', function() {
+                const text = this.textContent;
+                
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(function() {
+                        const tooltip = document.createElement('span');
+                        tooltip.className = 'copy-tooltip show';
+                        tooltip.textContent = 'Copied!';
+                        stationName.appendChild(tooltip);
+                        
+                        setTimeout(function() {
+                            tooltip.classList.remove('show');
+                            setTimeout(function() {
+                                tooltip.remove();
+                            }, 300);
+                        }, 1500);
+                    }).catch(function(err) {
+                        console.error('Copy failed:', err);
+                    });
+                }
+            });
+        }
+    </script>
 </body>
 </html>
-<!DOCTYPE html>
